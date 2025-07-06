@@ -23,7 +23,7 @@ emissionsRouter.get(`/`, ensureAuthenticated, async (req, res) => {
       emissions = emissions.map((item) => item.premiumEmission === false);
     }
 
-    return res.json({ length: emissions.length, array: emissions });
+    return res.json({ length: emissions.length, data: emissions });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
@@ -35,8 +35,8 @@ emissionsRouter.post(`/`, ensureAdminAuthentication, async (req, res) => {
       premiumEmission,
       departureDates,
       returnDates,
-      departureCityName,
-      destinyCityName,
+      departureCityId,
+      destinyCityId,
       airlineName,
       airlineProgram,
       departureMilesPrice,
@@ -52,8 +52,8 @@ emissionsRouter.post(`/`, ensureAdminAuthentication, async (req, res) => {
 
     const createEmissionsController = new CreateEmissionsController(
       premiumEmission,
-      departureCityName,
-      destinyCityName,
+      departureCityId,
+      destinyCityId,
       airlineName,
       airlineProgram,
       departureMilesPrice,

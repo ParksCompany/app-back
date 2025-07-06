@@ -1,3 +1,5 @@
+const { areAllDatesValid } = require("../../helpers/utils");
+
 const { EmissionsRepository } = require("../../repositories/emissions");
 const { EmissionsDatesRepository } = require("../../repositories/emissions_dates");
 
@@ -28,12 +30,18 @@ class UpdateEmissionsController {
 
     //update emission departure date
     if (dates.departureDates && dates.departureDates.length > 0) {
+      const departureDatesAreValid = areAllDatesValid(dates.departureDates);
+      if (departureDatesAreValid === false) throw new Error(`As datas de embarque e destino devem estar no formato YYYY-MM-DD HH:mm`);
+
       await emissionsDatesRepository.deleteEmissionDatesById(this.id, "departure");
       await emissionsDatesRepository.createEmissionDateByRoundTrip(this.id, "departure", dates.departureDates);
     }
 
     //update emission return date
     if (dates.returnDates && dates.returnDates.length > 0) {
+      const returnDatesAreValid = areAllDatesValid(dates.returnDates);
+      if (returnDatesAreValid === false) throw new Error(`As datas de embarque e destino devem estar no formato YYYY-MM-DD HH:mm`);
+
       await emissionsDatesRepository.deleteEmissionDatesById(this.id, "return");
       await emissionsDatesRepository.createEmissionDateByRoundTrip(this.id, "return", dates.returnDates);
     }

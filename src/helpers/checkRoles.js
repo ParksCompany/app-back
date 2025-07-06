@@ -26,6 +26,10 @@ const checkSQLInjection = (inputs) => {
 
 const checkIfIsIntegerNumber = (input) => {
   if (!/^[+-]?\d+$/.test(input)) throw new Error(`Você deve passar um ID válido`);
+
+  const inputInteger = parseInt(input);
+  if (inputInteger <= 0) throw new Error(`Você deve passar um ID positivo.`);
+
   return;
 };
 

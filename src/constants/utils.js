@@ -17,7 +17,6 @@ const dangerousWords = [
   "/*",
   "*/",
   "@@",
-  "@",
   "CHAR(",
   "NCHAR(",
   "VARCHAR(",

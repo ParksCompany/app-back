@@ -1,3 +1,9 @@
+const moment = require("moment");
+
+function areAllDatesValid(dateArray) {
+  return dateArray.every((dateStr) => moment(dateStr, "YYYY-MM-DD HH:mm", true).isValid());
+}
+
 const formatArrayToSqlWhere = (array, atribute = null) => {
   return array.map((item) => `'${atribute ? item[atribute] : item}'`).join(",");
 };
@@ -11,4 +17,4 @@ const transformStringToArray = (string) => {
     .filter((item) => item.length > 0); // Remove itens vazios caso existam
 };
 
-module.exports = { formatArrayToSqlWhere, transformStringToArray };
+module.exports = { formatArrayToSqlWhere, transformStringToArray, areAllDatesValid };

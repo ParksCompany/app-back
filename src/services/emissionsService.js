@@ -45,7 +45,7 @@ class EmissionsService {
 
   validateCitiesRegistersInCreateEmissions = (emissionCitiesData) => {
     // Lista dos campos obrigatórios
-    const requiredFields = ["departureCityName", "destinyCityName", "departureDates", "returnDates"];
+    const requiredFields = ["departureCityId", "destinyCityId", "departureDates", "returnDates"];
 
     // Verifica se algum campo obrigatório está ausente
     const missingFields = requiredFields.filter(

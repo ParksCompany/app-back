@@ -5,7 +5,7 @@ class GetAllUsersController {
     const usersRepository = new UsersRepository();
     const users = await usersRepository.getAllUsers();
 
-    return users;
+    return { length: users.length, data: users };
   }
 }
 

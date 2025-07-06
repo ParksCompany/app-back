@@ -3,10 +3,11 @@ const { CountriesRepository } = require("../../repositories/countries");
 const { RegionsRepository } = require("../../repositories/regions");
 
 class CreateCitiesController {
-  constructor(city, country, region) {
-    this.city = city;
-    this.country = country;
-    this.region = region;
+  constructor(id, name, id_country, id_region) {
+    this.id = id;
+    this.name = name;
+    this.id_country = id_country;
+    this.id_region = id_region;
   }
 
   async start() {
@@ -15,31 +16,38 @@ class CreateCitiesController {
     const citiesRepository = new CitiesRepository();
 
     //Verify data on request body
-    if (!this.city || !this.country) throw new Error(`Os dados passados são insuficientes.`);
+    if (!this.name || !this.id_country) throw new Error(`Os dados passados são insuficientes.`);
 
     //select the country of the city
-    const country = await countriesRepository.getCountryByName(this.country);
+    const country = await countriesRepository.getCountryById({ id: this.id_country });
     if (!country) throw new Error(`O país selecionado não existe na base ou está escrito de forma incorreta.`);
 
-    //select the region of the city (just for brasil)
-    let region = null;
+    //select the region of the city
+    let selectedRegion = null;
 
-    if (this.country === "Brasil" || this.country === "brasil") {
-      region = await regionsRepository.getRegionsByName(this.region);
-      if (!region) throw new Error(`A região selecionada não existe na base ou está escrita de forma incorreta.`);
+    if (this.id_region) {
+      selectedRegion = await regionsRepository.getRegionsById({ id: this.id_region });
+      if (!selectedRegion) throw new Error(`A região selecionada não existe na base ou está escrita de forma incorreta.`);
     }
 
     //verify if city already exists
-    const cityAlreadyExists = await citiesRepository.getCityByName(this.city);
-    if (cityAlreadyExists) throw new Error(`A cidade já existe.`);
+    if (this.id) {
+      const cityAlreadyExists = await citiesRepository.getCityById(this.id);
+      if (cityAlreadyExists) throw new Error(`A cidade já existe.`);
+    }
 
-    const city = await citiesRepository.createCities(this.city, region ? region?.id_regions : null, country?.id_countries);
+    const city = await citiesRepository.createCities({
+      id: this.id ? this.id : null,
+      id_country: this.id_country,
+      name: this.name,
+      id_region: this.id_region ? this.id_region : null,
+    });
 
     return {
       id: city,
-      country: this.country,
-      name: this.city,
-      region: this.country === "Brasil" || this.country === "brasil" ? this.region : null,
+      country: country.name,
+      name: this.name,
+      region: selectedRegion !== null ? selectedRegion.name : selectedRegion,
     };
   }
 }

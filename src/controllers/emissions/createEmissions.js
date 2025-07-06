@@ -1,5 +1,7 @@
 const moment = require("moment-timezone");
 
+const { areAllDatesValid } = require("../../helpers/utils");
+
 const { CitiesRepository } = require("../../repositories/cities");
 const { EmissionsRepository } = require("../../repositories/emissions");
 const { EmissionsDatesRepository } = require("../../repositories/emissions_dates");
@@ -8,8 +10,8 @@ const { EmissionsService } = require("../../services/emissionsService");
 class CreateEmissionsController {
   constructor(
     premiumEmission,
-    departureCityName,
-    destinyCityName,
+    departureCityId,
+    destinyCityId,
     airlineName,
     airlineProgram,
     departureMilesPrice,
@@ -25,8 +27,8 @@ class CreateEmissionsController {
     returnDates
   ) {
     this.premiumEmission = premiumEmission;
-    this.departureCityName = departureCityName;
-    this.destinyCityName = destinyCityName;
+    this.departureCityId = departureCityId;
+    this.destinyCityId = destinyCityId;
     this.airlineName = airlineName;
     this.airlineProgram = airlineProgram;
     this.departureMilesPrice = departureMilesPrice;
@@ -50,8 +52,8 @@ class CreateEmissionsController {
 
     //Cities data object
     const emissionCitiesData = {
-      departureCityName: this.departureCityName,
-      destinyCityName: this.destinyCityName,
+      departureCityId: this.departureCityId,
+      destinyCityId: this.destinyCityId,
       departureDates: this.departureDates,
       returnDates: this.returnDates,
     };
@@ -60,12 +62,20 @@ class CreateEmissionsController {
     emissionsService.validateCitiesRegistersInCreateEmissions(emissionCitiesData);
 
     //verify if departure city exists
-    const departureCity = await citiesRepository.getCityByName(this.departureCityName);
-    if (!departureCity) throw new Error(`A cidade ${this.departureCityName} não existe na base de cidades`);
+    const departureCity = await citiesRepository.getCityById(this.departureCityId);
+    if (!departureCity) throw new Error(`A cidade embarque de ID ${this.departureCityId} não existe na base de cidades`);
 
     //verify if destiny city exists
-    const destinyCity = await citiesRepository.getCityByName(this.destinyCityName);
-    if (!destinyCity) throw new Error(`A cidade ${this.destinyCity} não existe na base de cidades`);
+    const destinyCity = await citiesRepository.getCityById(this.destinyCityId);
+    if (!destinyCity) throw new Error(`A cidade destino de ID ${this.destinyCityId} não existe na base de cidades`);
+
+    //verify if departure and return dates are valid
+    const departureDatesAreValid = areAllDatesValid(this.departureDates);
+    const returnDatesAreValid = areAllDatesValid(this.returnDates);
+
+    if (departureDatesAreValid === false || returnDatesAreValid === false) {
+      throw new Error(`As datas de embarque e destino devem estar no formato YYYY-MM-DD HH:mm`);
+    }
 
     //Emission data to create
     const emissionData = {
@@ -100,7 +110,16 @@ class CreateEmissionsController {
       emissionsDatesRepository.createEmissionDateByRoundTrip(newEmissionId, "return", this.returnDates),
     ]);
 
-    return emissionData;
+    delete emissionData.premiumEmission;
+    delete emissionData.departureCityId;
+    delete emissionData.destinyCityId;
+
+    return {
+      premiumEmission: this.premiumEmission,
+      departureCity: departureCity.name,
+      destinyCity: destinyCity.name,
+      ...emissionData,
+    };
   }
 }
 

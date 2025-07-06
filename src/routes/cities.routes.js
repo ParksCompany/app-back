@@ -17,11 +17,9 @@ const citiesRouter = Router();
 
 citiesRouter.get(`/`, ensureAuthenticated, async (req, res) => {
   try {
-    const { country } = req.query;
-
     checkNotAuthentication(req.user);
 
-    const getAllCitiesController = new GetAllCitiesController(country);
+    const getAllCitiesController = new GetAllCitiesController();
     const cities = await getAllCitiesController.start();
 
     return res.json(cities);
@@ -32,11 +30,15 @@ citiesRouter.get(`/`, ensureAuthenticated, async (req, res) => {
 
 citiesRouter.post(`/`, ensureAdminAuthentication, async (req, res) => {
   try {
-    const { city, country, region = null } = req.body;
+    const { id = null, name, id_country, id_region = null } = req.body;
 
-    checkSQLInjection([city, country, region]);
+    if (id) checkIfIsIntegerNumber(id);
+    if (id_region) checkIfIsIntegerNumber(id_region);
 
-    const createUsersController = new CreateCitiesController(city, country, region);
+    checkIfIsIntegerNumber(id_country);
+    checkSQLInjection([name]);
+
+    const createUsersController = new CreateCitiesController(id, name, id_country, id_region);
     const newCity = await createUsersController.start();
 
     return res.json(newCity);

@@ -12,12 +12,18 @@ class CreateSessionController {
 
     const user = await usersRepository.getUserByEmail(this.email);
 
+    if (!user) throw new Error(`O e-mail não existe`);
+
     const token = sign({}, SECRET, {
       subject: user.id_user.toString(),
       expiresIn: EXPIRES,
     });
 
+    const id = user.id_user;
+    delete user.id_user;
+
     return {
+      id: id,
       ...user,
       token,
     };
