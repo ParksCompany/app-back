@@ -14,9 +14,9 @@ const emissionsRouter = Router();
 
 emissionsRouter.get(`/`, ensureAuthenticated, async (req, res) => {
   try {
-    const { premium, departureCities, destinyCities, airlineName, airlineProgram } = req.query;
+    const { premium, departureCitiesId, destinyCitiesId, airlineName, airlineProgram } = req.query;
 
-    const getEmissionsController = new GetEmissionsController(departureCities, destinyCities, airlineName, airlineProgram, premium);
+    const getEmissionsController = new GetEmissionsController(departureCitiesId, destinyCitiesId, airlineName, airlineProgram, premium);
     let emissions = await getEmissionsController.start();
 
     if (req.user.role === "notAuthenticated") {

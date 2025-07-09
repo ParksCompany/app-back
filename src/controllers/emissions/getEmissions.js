@@ -6,9 +6,9 @@ const { EmissionsDatesRepository } = require("../../repositories/emissions_dates
 const { transformStringToArray } = require("../../helpers/utils");
 
 class GetEmissionsController {
-  constructor(departureCities, destinyCities, airlineName, airlineProgram, premium) {
-    this.departureCities = departureCities;
-    this.destinyCities = destinyCities;
+  constructor(departureCitiesId, destinyCitiesId, airlineName, airlineProgram, premium) {
+    this.departureCitiesId = departureCitiesId;
+    this.destinyCitiesId = destinyCitiesId;
     this.airlineName = airlineName;
     this.airlineProgram = airlineProgram;
     this.premium = premium;
@@ -21,20 +21,21 @@ class GetEmissionsController {
     const emissionsDatesRepository = new EmissionsDatesRepository();
 
     //Transforma as strings dos filtros em array para serem usadas
-    const departureCities = transformStringToArray(this.departureCities);
-    const destinyCities = transformStringToArray(this.destinyCities);
+    // const departureCities = transformStringToArray(this.departureCities);
+    // const destinyCities = transformStringToArray(this.destinyCities);
     const airlineName = transformStringToArray(this.airlineName);
     const airlineProgram = transformStringToArray(this.airlineProgram);
     const premium = transformStringToArray(this.premium);
 
     //Validation of departure city names filter
-    const departureCitiesData = departureCities ? await citiesService.getCitiesDataByListOfNames(departureCities) : null;
+    // const departureCitiesData = departureCities ? await citiesService.getCitiesDataByListOfNames(departureCities) : null;
 
     //Validation of destiny city names filter
-    const destinyCitiesData = destinyCities ? await citiesService.getCitiesDataByListOfNames(destinyCities) : null;
+    // const destinyCitiesData = destinyCities ? await citiesService.getCitiesDataByListOfNames(destinyCities) : null;
 
     //get all emissions
-    const emissions = await emissionsRepository.getAllEmissions(premium, departureCitiesData, destinyCitiesData, airlineName, airlineProgram);
+    // const emissions = await emissionsRepository.getAllEmissions(premium, departureCitiesData, destinyCitiesData, airlineName, airlineProgram);
+    const emissions = await emissionsRepository.getAllEmissions(premium, this.departureCitiesId, this.destinyCitiesId, airlineName, airlineProgram);
 
     //get all emissions dates
     const emissionDates = await emissionsDatesRepository.getAllEmissionDates();

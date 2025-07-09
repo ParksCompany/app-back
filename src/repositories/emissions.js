@@ -16,7 +16,7 @@ class EmissionsRepository {
     }
   };
 
-  getAllEmissions = async (premium, departureCitiesData, destinyCitiesData, airlineName, airlineProgram) => {
+  getAllEmissions = async (premium, departureCitiesId, destinyCitiesId, airlineName, airlineProgram) => {
     try {
       const query = `
         SELECT 
@@ -28,8 +28,8 @@ class EmissionsRepository {
         LEFT JOIN emissionsApp.cities CIT2 ON EM.destinyCityId = CIT2.id_cities
         WHERE EM.destinyCityId IS NOT NULL
         ${premium !== null ? `AND EM.premiumEmission = ${premium === true ? 1 : 0}` : ""}
-        ${departureCitiesData ? `AND EM.departureCityId IN (${formatArrayToSqlWhere(departureCitiesData, "id_cities")})` : ""}
-        ${destinyCitiesData ? `AND EM.destinyCityId IN (${formatArrayToSqlWhere(destinyCitiesData, "id_cities")})` : ""}
+        ${departureCitiesId ? `AND EM.departureCityId IN (${departureCitiesId})` : ""}
+        ${destinyCitiesId ? `AND EM.destinyCityId IN (${destinyCitiesId})` : ""}
         ${airlineName ? `AND EM.airlineName IN (${formatArrayToSqlWhere(airlineName)})` : ""}
         ${airlineProgram ? `AND EM.airlineProgram IN (${formatArrayToSqlWhere(airlineProgram)})` : ""}
         ORDER BY EM.created_at desc;
@@ -138,6 +138,8 @@ class EmissionsRepository {
       //emission dates are updated in another section
       if (updateData.departureDates) delete updateData.departureDates;
       if (updateData.returnDates) delete updateData.returnDates;
+
+      if (Object.keys(updateData).length === 0) return;
 
       // Filtra apenas os campos que o usuário enviou
       const fieldsToUpdate = Object.entries(updateData)
