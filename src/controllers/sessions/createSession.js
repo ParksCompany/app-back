@@ -19,6 +19,7 @@ class CreateSessionController {
       expiresIn: EXPIRES,
     });
 
+    user.isPremium = user.isPremium === 1 ? true : false;
     const id = user.id_user;
     delete user.id_user;
 

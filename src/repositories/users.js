@@ -15,7 +15,7 @@ class UsersRepository {
 
   getUserById = async (id) => {
     try {
-      const query = `SELECT id_user as id, name, email, created_at FROM emissionsApp.users where id_user like '${id}';`;
+      const query = `SELECT id_user as id, name, email, isPremium, created_at FROM emissionsApp.users where id_user like '${id}';`;
 
       const [[response]] = await MySqlConnection.query(query);
       return response;
@@ -26,7 +26,7 @@ class UsersRepository {
 
   getAllUsers = async () => {
     try {
-      const query = `SELECT id_user as id, name, email, created_at FROM emissionsApp.users;`;
+      const query = `SELECT id_user as id, name, email, isPremium, created_at FROM emissionsApp.users;`;
 
       const [response] = await MySqlConnection.query(query);
       return response;
@@ -35,28 +35,37 @@ class UsersRepository {
     }
   };
 
-  createUsers = async (name, email) => {
+  createUsers = async (name, email, isPremium) => {
     try {
       const date = moment().tz("America/Sao_Paulo").format("YYYY-MM-DD HH:mm");
 
-      const query = `INSERT INTO emissionsApp.users (name, email, created_at) VALUES ('${name}', '${email}', '${date}');`;
+      const query = `INSERT INTO emissionsApp.users (name, email, isPremium, created_at) VALUES ('${name}', '${email}','${isPremium}', '${date}');`;
 
       const [response] = await MySqlConnection.query(query);
       return response;
     } catch (err) {
-      throw new Error(`Erro ao buscar todos os usuários.`);
+      throw new Error(`Erro ao criar o usuário.`);
     }
   };
 
-  editUsers = async (id, name) => {
+  editUsers = async (id, name = null, isPremium = null) => {
     try {
-      const query = `UPDATE emissionsApp.users SET name = '${name}' WHERE (id_user = '${id}');`;
+      // Array para os campos a serem atualizados
+      const fields = [];
+
+      if (name !== null) fields.push(`name = '${name}'`);
+      if (isPremium !== null) fields.push(`isPremium = '${isPremium}'`);
+
+      // Se nenhum campo foi fornecido, não há o que atualizar
+      if (fields.length === 0) throw new Error("Nenhum dado para atualizar.");
+
+      const query = `UPDATE emissionsApp.users SET ${fields.join(", ")} WHERE (id_user = '${id}');`;
 
       const [response] = await MySqlConnection.query(query);
 
       return response;
     } catch (err) {
-      throw new Error(`Erro ao buscar todos os usuários.`);
+      throw new Error(`Erro ao atualizar o usuário.`);
     }
   };
 

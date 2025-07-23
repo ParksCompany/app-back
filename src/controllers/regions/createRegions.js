@@ -26,14 +26,6 @@ class CreateRegionsController {
 
     const newRegion = await regionsRepository.createRegions({ id: this.id ? this.id : null, name: this.name, idCountries: this.idCountry });
 
-    // if (this.id) {
-    //   return {
-    //     id: this.id,
-    //     id_country: this.idCountry,
-    //     name: this.name,
-    //   };
-    // }
-
     return {
       id: newRegion,
       country: countryExists.name,

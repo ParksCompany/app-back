@@ -12,6 +12,7 @@ class GetUserController {
 
     const usersRepository = new UsersRepository();
     const user = await usersRepository.getUserById(this.id);
+    user.isPremium = user.isPremium === 1 ? true : false;
 
     if (!user) throw new Error(`O usuário não existe.`);
 
