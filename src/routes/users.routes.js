@@ -41,11 +41,11 @@ usersRouter.get(`/`, ensureAdminAuthentication, async (req, res) => {
 
 usersRouter.post(`/`, ensureAdminAuthentication, async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, isPremium = false } = req.body;
 
     checkSQLInjection([name, email]);
 
-    const createUsersController = new CreateUsersController(name, email);
+    const createUsersController = new CreateUsersController(name, email, isPremium);
     const users = await createUsersController.start();
 
     return res.json(users);
@@ -57,12 +57,12 @@ usersRouter.post(`/`, ensureAdminAuthentication, async (req, res) => {
 usersRouter.put(`/:id`, ensureAdminAuthentication, async (req, res) => {
   try {
     const { id } = req.params;
-    const { name } = req.body;
+    const { name = null, isPremium = null } = req.body;
 
     checkIfIsIntegerNumber(id);
-    checkSQLInjection([name]);
+    checkSQLInjection([name, isPremium]);
 
-    const updateUsersController = new UpdateUsersController(id, name);
+    const updateUsersController = new UpdateUsersController(id, name, isPremium);
     const user = await updateUsersController.start();
 
     return res.json(user);

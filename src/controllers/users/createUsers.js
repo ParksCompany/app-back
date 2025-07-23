@@ -1,9 +1,10 @@
 const { UsersRepository } = require("../../repositories/users");
 
 class CreateUsersController {
-  constructor(name, email) {
+  constructor(name, email, isPremium) {
     this.name = name;
     this.email = email;
+    this.isPremium = isPremium;
   }
 
   async start() {
@@ -13,7 +14,7 @@ class CreateUsersController {
     const userAlreadyExists = await usersRepository.getUserByEmail(this.email);
     if (userAlreadyExists) throw new Error(`O usuário já existe.`);
 
-    await usersRepository.createUsers(this.name, this.email);
+    await usersRepository.createUsers(this.name, this.email, this.isPremium && this.isPremium === true ? 1 : 0);
 
     const newUser = usersRepository.getUserByEmail(this.email);
     return newUser;

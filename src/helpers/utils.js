@@ -17,4 +17,11 @@ const transformStringToArray = (string) => {
     .filter((item) => item.length > 0); // Remove itens vazios caso existam
 };
 
-module.exports = { formatArrayToSqlWhere, transformStringToArray, areAllDatesValid };
+const parseBoolean = (value) => {
+  if (value === null) return null;
+  if (value === "true") return true;
+  if (value === "false") return false;
+  return null;
+};
+
+module.exports = { formatArrayToSqlWhere, transformStringToArray, areAllDatesValid, parseBoolean };
